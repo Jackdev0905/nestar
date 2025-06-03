@@ -17,7 +17,7 @@ const MemberSchema = new Schema(
 
 		memberAuthType: {
 			type: String,
-			enum: MemberStatus,
+			enum: MemberAuthType,
 			default: MemberAuthType.PHONE,
 		},
 		memberPhone: {
