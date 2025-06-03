@@ -17,15 +17,20 @@ export class MemberResolver {
 			return this.memberService.signup(input);
 		} catch (err) {
 			console.log('Error, signup', err);
-			throw new InternalServerErrorException(err)
+			throw new InternalServerErrorException(err);
 		}
 	}
 
-	@Mutation(() => String)
+	@Mutation(() => Member)
 	@UsePipes(ValidationPipe)
-	public async login(@Args('input') input: LoginInput): Promise<string> {
-		console.log('Mutation: login');
-		return 'login exec';
+	public async login(@Args('input') input: LoginInput): Promise<Member> {
+		try {
+			console.log('Mutation: login');
+			return this.memberService.login(input);
+		} catch (err) {
+			console.log('Error, signup', err);
+			throw new InternalServerErrorException(err);
+		}
 	}
 
 	@Query(() => String)
