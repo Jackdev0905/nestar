@@ -9,22 +9,22 @@ export class MemberInput {
 	@Field(() => String)
 	memberNick: string;
 
-    @IsNotEmpty()
+	@IsNotEmpty()
 	@Length(5, 12)
 	@Field(() => String)
 	memberPassword: string;
 
-    @IsNotEmpty()
+	@IsNotEmpty()
 	@Field(() => String)
 	memberPhone: string;
 
-    @IsOptional()
-	@Field(() => MemberType, {nullable:true})
-    memberType?: MemberType
+	@IsOptional()
+	@Field(() => MemberType, { nullable: true })
+	memberType?: MemberType;
 
-    @IsOptional()
-	@Field(() => MemberAuthType, {nullable:true})
-    memberAuthType?: MemberAuthType
+	@IsOptional()
+	@Field(() => MemberAuthType, { nullable: true })
+	memberAuthType?: MemberAuthType;
 }
 
 @InputType()
@@ -34,9 +34,8 @@ export class LoginInput {
 	@Field(() => String)
 	memberNick: string;
 
-    @IsNotEmpty()
+	@IsNotEmpty()
 	@Length(5, 12)
 	@Field(() => String)
 	memberPassword: string;
-
 }
