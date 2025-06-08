@@ -1,4 +1,3 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { Mutation, Resolver, Query, Args } from '@nestjs/graphql';
 import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
