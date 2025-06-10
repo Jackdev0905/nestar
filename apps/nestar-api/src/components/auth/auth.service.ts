@@ -3,6 +3,7 @@ import { Member } from './../../libs/dto/member/member';
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { T } from '../../libs/types/common';
+import { shapeIntoMongooseObjectId } from '../../libs/config';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +29,8 @@ export class AuthService {
 	}
 
     public async verifyToken(token: string): Promise<Member> {
-		return await this.jwtService.verifyAsync(token);
+		const member = await this.jwtService.verifyAsync(token);
+		member._id = shapeIntoMongooseObjectId(member._id)
+		return member
 	}
 }

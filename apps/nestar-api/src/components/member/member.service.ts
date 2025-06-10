@@ -42,4 +42,8 @@ export class MemberService {
 			return response;
 		
 	}
+
+	public updateMember():string{
+		return "updateMember"
+	}
 }
