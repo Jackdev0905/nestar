@@ -1,3 +1,4 @@
+import { AuthService } from './../auth/auth.service';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -8,9 +9,10 @@ import { MemberStatus } from '../../libs/enums/member.enum';
 
 @Injectable()
 export class MemberService {
-	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>) {}
+	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>, private authService: AuthService) {}
 
 	public async signup(input: MemberInput): Promise<Member> {
+		input.memberPassword = await this.authService.hashPassword(input.memberPassword)
 		try {
 			const result = await this.memberModel.create(input);
 			return result;
@@ -31,7 +33,7 @@ export class MemberService {
 				throw new InternalServerErrorException(Message.BLOCKED_USER);
 			}
 
-			const isMatch = memberPassword === response.memberPassword;
+			const isMatch = await this.authService.comparePasswords(memberPassword,response.memberPassword);
 			if(!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD)
 
 			return response;
