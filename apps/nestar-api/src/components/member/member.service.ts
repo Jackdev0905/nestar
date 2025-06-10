@@ -46,4 +46,8 @@ export class MemberService {
 	public updateMember():string{
 		return "updateMember"
 	}
+
+	public getAllMembersByAdmin():string{
+		return "getAllMembersByAdmin executed"
+	}
 }
