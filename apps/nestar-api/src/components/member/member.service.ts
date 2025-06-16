@@ -7,7 +7,7 @@ import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../li
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
-import { T } from '../../libs/types/common';
+import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewService } from '../view/view.service';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
@@ -152,5 +152,12 @@ export class MemberService {
 
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		return result;
+	}
+
+	public async memberStatsEditor(input: StatisticModifier): Promise<Member | null> {
+		const { _id, modifier, targetKey } = input;
+		console.log('exec');
+
+		return await this.memberModel.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true });
 	}
 }
