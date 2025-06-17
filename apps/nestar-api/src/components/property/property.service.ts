@@ -16,7 +16,7 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
-import moment from 'moment';
+import * as moment from 'moment';
 import { lookupMember, shapeIntoMongooseObjectId } from '../../libs/config';
 
 @Injectable()
@@ -231,7 +231,7 @@ export class PropertyService {
 		return result[0];
 	}
 
-	public async updatePropertyByAdmin( input: PropertyUpdate): Promise<Property> {
+	public async updatePropertyByAdmin(input: PropertyUpdate): Promise<Property> {
 		let { propertyStatus, soldAt, deletedAt } = input;
 
 		const search: T = {
@@ -259,6 +259,13 @@ export class PropertyService {
 			});
 		}
 
+		return result;
+	}
+
+	public async removePropertyByAdmin(propertyId: ObjectId): Promise<Property> {
+		const search: T = { _id: propertyId, propertyStatus: PropertyStatus.DELETE };
+		const result = await this.propertyModel.findOneAndDelete(search).exec();
+		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 		return result;
 	}
 }
