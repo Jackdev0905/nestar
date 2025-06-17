@@ -1,3 +1,4 @@
+import { PropertyStatus } from './../../libs/enums/property.enum';
 import { ViewService } from './../view/view.service';
 import { MemberService } from './../member/member.service';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -7,9 +8,10 @@ import { Property } from '../../libs/dto/property/property';
 import { PropertyInput } from '../../libs/dto/property/property.input';
 import { Message } from '../../libs/enums/common.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
-import { PropertyStatus } from '../../libs/enums/property.enum';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
+import { PropertyUpdate } from '../../libs/dto/property/property.update';
+import moment from 'moment';
 
 @Injectable()
 export class PropertyService {
@@ -58,6 +60,38 @@ export class PropertyService {
 		targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId);
 
 		return targetProperty;
+	}
+
+	public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<Property> {
+		let { propertyStatus, soldAt, deletedAt } = input;
+
+		const search: T = {
+			_id: input._id,
+			memberId: memberId,
+			propertyStatus: PropertyStatus.ACTIVE,
+		};
+		console.log("search", search);
+		
+		if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
+		if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
+
+		const result = await this.propertyModel
+			.findByIdAndUpdate(search, input, {
+				new: true,
+			})
+			.exec();
+
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+		if (soldAt || deletedAt) {
+			await this.memberService.memberStatsEditor({
+				_id: memberId,
+				targetKey: 'memberProperties',
+				modifier: -1,
+			});
+		}
+
+		return result;
 	}
 
 	public async propertStatsModifier(input: StatisticModifier): Promise<Property | null> {
