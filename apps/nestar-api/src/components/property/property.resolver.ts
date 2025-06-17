@@ -5,7 +5,12 @@ import { PropertyService } from './property.service';
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Properties, Property } from '../../libs/dto/property/property';
-import { AgentPropertiesInquiry, AllPropertiesInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import {
+	AgentPropertiesInquiry,
+	AllPropertiesInquiry,
+	PropertiesInquiry,
+	PropertyInput,
+} from '../../libs/dto/property/property.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
@@ -72,7 +77,6 @@ export class PropertyResolver {
 		return await this.propertyService.getAgentProperties(memberId, input);
 	}
 
-
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => Properties)
@@ -82,5 +86,16 @@ export class PropertyResolver {
 	): Promise<Properties> {
 		console.log('Mutation: getAllPropertiesByAdmin');
 		return await this.propertyService.getAllPropertiesByAdmin(input);
+	}
+
+	@Roles(MemberType.ADMIN)
+	@UseGuards(RolesGuard)
+	@Mutation(() => Property)
+	public async updatePropertyByAdmin(
+		@Args('input') input: PropertyUpdate,
+	): Promise<Property> {
+		console.log('Mutation: updatePropertyByAdmin');
+		input._id = shapeIntoMongooseObjectId(input._id);
+		return await this.propertyService.updatePropertyByAdmin( input);
 	}
 }
