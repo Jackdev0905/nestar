@@ -154,7 +154,7 @@ export class PropertiesInquiry {
 	limit: number;
 
 	@IsOptional()
-	// @IsIn([availablePropertySorts])
+	@IsIn(availablePropertySorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
@@ -227,7 +227,7 @@ export class AllPropertiesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn([availablePropertySorts])
+	@IsIn(availablePropertySorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
