@@ -57,7 +57,7 @@ export class PropertyService {
 			if (newView) {
 				await this.propertStatsModifier({
 					_id: propertyId,
-					targetKey: 'propertViews',
+					targetKey: 'propertyViews',
 					modifier: 1,
 				});
 				targetProperty.propertyViews++;
