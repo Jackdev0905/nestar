@@ -100,21 +100,7 @@ export class PropertyService {
 		return result;
 	}
 
-	public async propertStatsModifier(input: StatisticModifier): Promise<Property | null> {
-		const { _id, modifier, targetKey } = input;
-
-		return await this.propertyModel
-			.findByIdAndUpdate(
-				_id,
-				{
-					$inc: {
-						[targetKey]: modifier,
-					},
-				},
-				{ new: true },
-			)
-			.exec();
-	}
+	
 
 	public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promise<Properties> {
 		const match: T = { propertyStatus: PropertyStatus.ACTIVE };
@@ -267,5 +253,21 @@ export class PropertyService {
 		const result = await this.propertyModel.findOneAndDelete(search).exec();
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 		return result;
+	}
+
+	public async propertStatsModifier(input: StatisticModifier): Promise<Property | null> {
+		const { _id, modifier, targetKey } = input;
+
+		return await this.propertyModel
+			.findByIdAndUpdate(
+				_id,
+				{
+					$inc: {
+						[targetKey]: modifier,
+					},
+				},
+				{ new: true },
+			)
+			.exec();
 	}
 }
