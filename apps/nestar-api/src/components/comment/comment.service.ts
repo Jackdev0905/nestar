@@ -43,19 +43,17 @@ export class CommentService {
 				targetKey: 'articleComments',
 				modifier: 1,
 			});
-		else (input.commentGroup === CommentGroup.PROPERTY)
-			await this.propertyService.propertStatsModifier({
-				_id: input.commentRefId,
-				targetKey: 'propertyComments',
-				modifier: 1,
-			});
+		else input.commentGroup === CommentGroup.PROPERTY;
+		await this.propertyService.propertStatsModifier({
+			_id: input.commentRefId,
+			targetKey: 'propertyComments',
+			modifier: 1,
+		});
 		if (!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
 
 		return result;
-        // Commentni boshqa id va boshqa groupga yzosa ham bolyapti
+		// Commentni boshqa id va boshqa groupga yzosa ham bolyapti
 	}
-
-
 
 	public async updateComment(memberId: ObjectId, input: CommentUpdate): Promise<Comment> {
 		const { _id } = input;
@@ -70,30 +68,36 @@ export class CommentService {
 		return result;
 	}
 
-    public async getComments(memberId: ObjectId, input: CommentsInquiry): Promise<Comments> {
-            const { commentRefId } = input.search;
-            const match: T = { commentStatus: CommentStatus.ACTIVE, commentRefId:commentRefId };
-            const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
-          
-            const result = await this.commentModel
-                .aggregate([
-                    { $match: match },
-                    { $sort: sort },
-                    {
-                        $facet: {
-                            list: [
-                                { $skip: (input.page - 1) * input.limit },
-                                { $limit: input.limit },
-                                // meLiked
-                                lookupMember,
-                                { $unwind: '$memberData' },
-                            ],
-                            metaCounter: [{ $count: 'total' }],
-                        },
-                    },
-                ])
-                .exec();
-            if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-            return result[0];
-        }
+	public async getComments(memberId: ObjectId, input: CommentsInquiry): Promise<Comments> {
+		const { commentRefId } = input.search;
+		const match: T = { commentStatus: CommentStatus.ACTIVE, commentRefId: commentRefId };
+		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+		const result = await this.commentModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [
+							{ $skip: (input.page - 1) * input.limit },
+							{ $limit: input.limit },
+							// meLiked
+							lookupMember,
+							{ $unwind: '$memberData' },
+						],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+		return result[0];
+	}
+	public async removeCommentByAdmin(input: ObjectId): Promise<Comment> {
+		const result = await this.commentModel.findByIdAndDelete(input).exec();
+		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+		return result;
+        // Unda delete status nimaga kerak
+	}
 }
