@@ -78,7 +78,7 @@ export class BoardArticleService {
 		const { _id, articleStatus } = input;
 
 		const result = await this.boardArticleModel
-			.findByIdAndUpdate({ _id: _id, memberId: memberId, articleStatus: BoardArticleStatus.ACTIVE }, input, {
+			.findOneAndUpdate({ _id: _id, memberId: memberId, articleStatus: BoardArticleStatus.ACTIVE }, input, {
 				new: true,
 			})
 			.exec();

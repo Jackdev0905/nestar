@@ -16,5 +16,6 @@ import BoardArticleSchema from '../../schemas/BoardArticle.model';
 	],
 
 	providers: [BoardArticleResolver, BoardArticleService],
+	exports:[BoardArticleService]
 })
 export class BoardArticleModule {}
