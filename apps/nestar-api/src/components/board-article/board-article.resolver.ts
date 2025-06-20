@@ -67,9 +67,9 @@ export class BoardArticleResolver {
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query((returns) => BoardArticles)
-	public async getBoardArticlesByAdmin(@Args('input') input: AllBoardArticlesInquiry): Promise<BoardArticles> {
-		console.log('Query: getBoardArticlesByAdmin');
-		return await this.boardArticleService.getBoardArticlesByAdmin(input);
+	public async getAllBoardArticlesByAdmin(@Args('input') input: AllBoardArticlesInquiry): Promise<BoardArticles> {
+		console.log('Query: getAllBoardArticlesByAdmin');
+		return await this.boardArticleService.getAllBoardArticlesByAdmin(input);
 	}
 
 	@Roles(MemberType.ADMIN)
