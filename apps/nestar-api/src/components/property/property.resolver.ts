@@ -16,6 +16,7 @@ import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongooseObjectId } from '../../libs/config';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Resolver()
 export class PropertyResolver {
@@ -56,6 +57,17 @@ export class PropertyResolver {
 		return await this.propertyService.updateProperty(memberId, input);
 	}
 
+	@UseGuards(AuthGuard)
+	@Mutation(() => Property)
+	public async likeTargetProperty(
+		@AuthMember('_id') memberId: ObjectId,
+		@Args('propertyId') input: String,
+	): Promise<Property> {
+		console.log('Mutation: likeTargetProperty');
+		const likeRefId = shapeIntoMongooseObjectId(input);
+		return await this.propertyService.likeTargetProperty(memberId, likeRefId);
+	}
+
 	@UseGuards(WithoutGuard)
 	@Query(() => Properties)
 	public async getProperties(
@@ -91,22 +103,18 @@ export class PropertyResolver {
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => Property)
-	public async updatePropertyByAdmin(
-		@Args('input') input: PropertyUpdate,
-	): Promise<Property> {
+	public async updatePropertyByAdmin(@Args('input') input: PropertyUpdate): Promise<Property> {
 		console.log('Mutation: updatePropertyByAdmin');
 		input._id = shapeIntoMongooseObjectId(input._id);
-		return await this.propertyService.updatePropertyByAdmin( input);
+		return await this.propertyService.updatePropertyByAdmin(input);
 	}
 
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => Property)
-	public async removePropertyByAdmin(
-		@Args('propertyId') input: String,
-	): Promise<Property> {
+	public async removePropertyByAdmin(@Args('propertyId') input: String): Promise<Property> {
 		console.log('Mutation: removePropertyByAdmin');
 		const propertyId = shapeIntoMongooseObjectId(input);
-		return await this.propertyService.removePropertyByAdmin( propertyId);
+		return await this.propertyService.removePropertyByAdmin(propertyId);
 	}
 }

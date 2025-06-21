@@ -52,6 +52,17 @@ export class BoardArticleResolver {
 		input._id = shapeIntoMongooseObjectId(input._id);
 		return await this.boardArticleService.updateBoardArticle(memberId, input);
 	}
+	
+	@UseGuards(AuthGuard)
+	@Mutation(() => BoardArticle)
+	public async likeTargetBoardArticle(
+		@AuthMember('_id') memberId: ObjectId,
+		@Args('articleId') input: String,
+	): Promise<BoardArticle> {
+		console.log('Mutation: likeTargetBoardArticle');
+		const likeRefId = shapeIntoMongooseObjectId(input);
+		return await this.boardArticleService.likeTargetBoardArticle(memberId, likeRefId);
+	}
 
 	@UseGuards(WithoutGuard)
 	@Query((returns) => BoardArticles)
