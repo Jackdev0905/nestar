@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { Message } from '../../libs/enums/common.enum';
 import { T } from '../../libs/types/common';
-import { Like } from '../../libs/dto/like/like';
+import { Like, MeLiked } from '../../libs/dto/like/like';
 
 @Injectable()
 export class LikeService {
@@ -20,16 +20,21 @@ export class LikeService {
 		if (exist) {
 			await this.likeModel.findOneAndDelete(input).exec();
 			modifier = -1;
+		} else {
+			try {
+				await this.likeModel.create(input);
+			} catch (err) {
+				console.log('Error, likeToggle model', err?.message);
+				throw new BadRequestException(Message.CREATE_FAILED);
+			}
 		}
-		else{
-            try {
-			await this.likeModel.create(input);
-            
-		} catch (err) {
-			console.log('Error, likeToggle model', err?.message);
-			throw new BadRequestException(Message.CREATE_FAILED);
-		}
-        }
 		return modifier;
+	}
+
+	public async checkLikeExistance(input: LikeInput): Promise<MeLiked[]> {
+		const { memberId, likeRefId } = input;
+		const result = await this.likeModel.findOne({ memberId: memberId, likeRefId: likeRefId }).exec();
+
+		return result ? [{ memberId: memberId, likeRefId: likeRefId, myFavorite: true }] : [];
 	}
 }

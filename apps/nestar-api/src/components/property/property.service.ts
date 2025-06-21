@@ -66,6 +66,13 @@ export class PropertyService {
 				});
 				targetProperty.propertyViews++;
 			}
+
+			const likeInput: LikeInput = {
+				memberId: memberId,
+				likeGroup: LikeGroup.PROPERTY,
+				likeRefId: propertyId,
+			};
+			targetProperty.meLiked = await this.likeService.checkLikeExistance(likeInput);
 		}
 		targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId);
 
@@ -105,26 +112,26 @@ export class PropertyService {
 	}
 
 	public async likeTargetProperty(memberId: ObjectId, likeRefId: ObjectId): Promise<Property> {
-			const target: Property | null = await this.propertyModel
-				.findOne({ _id: likeRefId, propertyStatus: PropertyStatus.ACTIVE })
-				.exec();
-			if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-	
-			const input: LikeInput = {
-				memberId: memberId,
-				likeRefId: likeRefId,
-				likeGroup: LikeGroup.PROPERTY,
-			};
-	
-			const modifier = await this.likeService.likeToggle(input);
-			const result = await this.propertStatsModifier({
-				_id: likeRefId,
-				targetKey: 'propertyLikes',
-				modifier: modifier,
-			});
-			if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG)
-			return result
-		}
+		const target: Property | null = await this.propertyModel
+			.findOne({ _id: likeRefId, propertyStatus: PropertyStatus.ACTIVE })
+			.exec();
+		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const input: LikeInput = {
+			memberId: memberId,
+			likeRefId: likeRefId,
+			likeGroup: LikeGroup.PROPERTY,
+		};
+
+		const modifier = await this.likeService.likeToggle(input);
+		const result = await this.propertStatsModifier({
+			_id: likeRefId,
+			targetKey: 'propertyLikes',
+			modifier: modifier,
+		});
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
+	}
 
 	public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promise<Properties> {
 		const match: T = { propertyStatus: PropertyStatus.ACTIVE };

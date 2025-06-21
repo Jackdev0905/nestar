@@ -14,6 +14,7 @@ import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
+import { MeLiked } from '../../libs/dto/like/like';
 
 @Injectable()
 export class MemberService {
@@ -90,7 +91,16 @@ export class MemberService {
 				await this.memberModel.findByIdAndUpdate(search, { $inc: { memberViews: 1 } }, { new: true }).exec();
 				targetMember.memberViews++;
 			}
+
+			const likeInput: LikeInput = {
+				memberId: memberId,
+				likeGroup: LikeGroup.MEMBER,
+				likeRefId: targetId,
+			};
+			targetMember.meLiked = await this.likeService.checkLikeExistance(likeInput) as any;
+			
 		}
+
 		return targetMember;
 	}
 
@@ -138,8 +148,8 @@ export class MemberService {
 			targetKey: 'memberLikes',
 			modifier: modifier,
 		});
-		if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG)
-		return result
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
 	}
 
 	public async getAllMembersByAdmin(input: MembersInquiry): Promise<Members> {
