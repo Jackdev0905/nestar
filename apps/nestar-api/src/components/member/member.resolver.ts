@@ -74,6 +74,17 @@ export class MemberResolver {
 		return await this.memberService.getAgents(memberId, input);
 	}
 
+	@UseGuards(AuthGuard)
+	@Mutation(() => Member)
+	public async likeTargetMember(
+		@AuthMember('_id') memberId: ObjectId,
+		@Args('memberId') input: String,
+	): Promise<Member> {
+		console.log('Mutation: likeTargetMember');
+		const likeRefId = shapeIntoMongooseObjectId(input)
+		return await this.memberService.likeTargetMember(memberId, likeRefId);
+	}
+
 	// ADMIN
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
