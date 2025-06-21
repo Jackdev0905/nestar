@@ -165,10 +165,9 @@ export class BoardArticleService {
 			_id: _id,
 			BoardArticleStatus: BoardArticleStatus.ACTIVE,
 		};
-		console.log('search', search);
 
 		const result = await this.boardArticleModel
-			.findByIdAndUpdate(search, input, {
+			.findOneAndUpdate(search, input, {
 				new: true,
 			})
 			.exec();
