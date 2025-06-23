@@ -17,6 +17,7 @@ import { LikeGroup } from '../../libs/enums/like.enum';
 import { MeLiked } from '../../libs/dto/like/like';
 import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
+import { lookupAuthMemberLiked } from '../../libs/config';
 
 @Injectable()
 export class MemberService {
@@ -101,7 +102,7 @@ export class MemberService {
 				likeRefId: targetId,
 			};
 			targetMember.meLiked = (await this.likeService.checkLikeExistance(likeInput)) as any;
-			targetMember.meFollowed = (await this.checkSubscription(memberId, targetId)) as any
+			targetMember.meFollowed = (await this.checkSubscription(memberId, targetId)) as any;
 		}
 
 		return targetMember;
@@ -123,7 +124,7 @@ export class MemberService {
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [{ $skip: (input.page - 1) * input.page }, { $limit: input.limit }],
+						list: [{ $skip: (input.page - 1) * input.page }, { $limit: input.limit }, lookupAuthMemberLiked(memberId)],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},

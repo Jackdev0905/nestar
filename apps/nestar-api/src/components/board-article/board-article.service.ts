@@ -16,7 +16,7 @@ import { BoardArticleStatus } from '../../libs/enums/board-article.enum';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
-import { lookupMember, shapeIntoMongooseObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, lookupMember, shapeIntoMongooseObjectId } from '../../libs/config';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 
@@ -106,26 +106,26 @@ export class BoardArticleService {
 	}
 
 	public async likeTargetBoardArticle(memberId: ObjectId, likeRefId: ObjectId): Promise<BoardArticle> {
-				const target: BoardArticle | null = await this.boardArticleModel
-					.findOne({ _id: likeRefId, articleStatus: BoardArticleStatus.ACTIVE })
-					.exec();
-				if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-		
-				const input: LikeInput = {
-					memberId: memberId,
-					likeRefId: likeRefId,
-					likeGroup: LikeGroup.ARTICLE,
-				};
-		
-				const modifier = await this.likeService.likeToggle(input);
-				const result = await this.boardArticleStatsModifier({
-					_id: likeRefId,
-					targetKey: 'articleLikes',
-					modifier: modifier,
-				});
-				if(!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG)
-				return result
-			}
+		const target: BoardArticle | null = await this.boardArticleModel
+			.findOne({ _id: likeRefId, articleStatus: BoardArticleStatus.ACTIVE })
+			.exec();
+		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const input: LikeInput = {
+			memberId: memberId,
+			likeRefId: likeRefId,
+			likeGroup: LikeGroup.ARTICLE,
+		};
+
+		const modifier = await this.likeService.likeToggle(input);
+		const result = await this.boardArticleStatsModifier({
+			_id: likeRefId,
+			targetKey: 'articleLikes',
+			modifier: modifier,
+		});
+		if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+		return result;
+	}
 
 	public async getBoardArticles(memberId: ObjectId, input: BoardArticlesInquiry): Promise<BoardArticles> {
 		const { articleCategory, text } = input.search;
@@ -147,7 +147,7 @@ export class BoardArticleService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							// meLiked
+							lookupAuthMemberLiked(memberId),
 							lookupMember,
 							{ $unwind: '$memberData' },
 						],
