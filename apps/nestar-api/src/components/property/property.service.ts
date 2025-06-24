@@ -9,6 +9,7 @@ import { Properties, Property } from '../../libs/dto/property/property';
 import {
 	AgentPropertiesInquiry,
 	AllPropertiesInquiry,
+	OrdinaryInquiry,
 	PropertiesInquiry,
 	PropertyInput,
 } from '../../libs/dto/property/property.input';
@@ -190,6 +191,15 @@ export class PropertyService {
 			});
 		}
 	}
+
+	public async getFavourites(memberId:ObjectId, input:OrdinaryInquiry):Promise<Properties | null>{
+		return await this.likeService.getFavouriteProperties(memberId, input)
+	}
+
+	public async getVisited(memberId:ObjectId, input:OrdinaryInquiry):Promise<Properties | null>{
+		return await this.viewService.getVisitedProperties(memberId, input)
+	}
+
 
 	public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
 		const { propertyStatus } = input.search;
