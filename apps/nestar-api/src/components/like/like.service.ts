@@ -8,7 +8,7 @@ import { Like, MeLiked } from '../../libs/dto/like/like';
 import { OrdinaryInquiry } from '../../libs/dto/property/property.input';
 import { Properties } from '../../libs/dto/property/property';
 import { LikeGroup } from '../../libs/enums/like.enum';
-import { lookupFavourite } from '../../libs/config';
+import { lookupFavorite } from '../../libs/config';
 
 @Injectable()
 export class LikeService {
@@ -42,7 +42,7 @@ export class LikeService {
 		return result ? [{ memberId: memberId, likeRefId: likeRefId, myFavorite: true }] : [];
 	}
 
-	public async getFavouriteProperties(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties | null> {
+	public async getFavoriteProperties(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties | null> {
 		const { page, limit } = input;
 		const match: T = { likeGroup: LikeGroup.PROPERTY, memberId: memberId };
 		const data = await this.likeModel.aggregate([
@@ -54,20 +54,20 @@ export class LikeService {
 					from: 'properties',
 					localField: 'likeRefId',
 					foreignField: '_id',
-					as: 'favouriteProperty',
+					as: 'favoriteProperty',
 				},
 			},
 			{
-				$unwind: '$favouriteProperty',
+				$unwind: '$favoriteProperty',
 			},
 			{
 				$facet: {
 					list: [
 						{ $skip: (page - 1) * limit },
 						{ $limit: limit },
-						lookupFavourite,
+						lookupFavorite,
 						{
-							$unwind: '$favouriteProperty.memberData',
+							$unwind: '$favoriteProperty.memberData',
 						},
 					],
 					metaCounter: [{ $count: 'total' }],
@@ -76,7 +76,7 @@ export class LikeService {
 		]);
 		console.log(data);
 		const result: Properties = {
-			list: data[0].list.map((ele) => ele.favouriteProperty),
+			list: data[0].list.map((ele) => ele.favoriteProperty),
 			metaCounter: data[0].metaCounter,
 		};
 

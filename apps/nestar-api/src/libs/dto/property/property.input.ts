@@ -188,7 +188,7 @@ export class AgentPropertiesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn([availablePropertySorts])
+	@IsIn(availablePropertySorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 

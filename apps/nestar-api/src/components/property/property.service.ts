@@ -192,8 +192,8 @@ export class PropertyService {
 		}
 	}
 
-	public async getFavourites(memberId:ObjectId, input:OrdinaryInquiry):Promise<Properties | null>{
-		return await this.likeService.getFavouriteProperties(memberId, input)
+	public async getFavorites(memberId:ObjectId, input:OrdinaryInquiry):Promise<Properties | null>{
+		return await this.likeService.getFavoriteProperties(memberId, input)
 	}
 
 	public async getVisited(memberId:ObjectId, input:OrdinaryInquiry):Promise<Properties | null>{
@@ -216,7 +216,6 @@ export class PropertyService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							// meLiked
 							lookupMember,
 							{ $unwind: '$memberData' },
 						],
