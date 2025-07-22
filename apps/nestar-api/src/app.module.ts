@@ -18,15 +18,15 @@ import { SocketModule } from './socket/socket.module';
 			playground: true,
 			uploads: false,
 			autoSchemaFile: true,
-		// 	formatError: (error: T) => {
-		// 		const graphQLFormattederror = {
-		// 			code: error?.extensions.code,
-		// 			message:
-		// 				error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
-		// 		};
-        // console.log("Global GraphQL Error:", graphQLFormattederror);
-        // return graphQLFormattederror;
-		// 	},
+			formatError: (error: T) => {
+				const graphQLFormattederror = {
+					code: error?.extensions.code,
+					message:
+						error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
+				};
+        console.log("Global GraphQL Error:", graphQLFormattederror);
+        return graphQLFormattederror;
+			},
 		}),
 		ComponentsModule,
 		DatabaseModule,

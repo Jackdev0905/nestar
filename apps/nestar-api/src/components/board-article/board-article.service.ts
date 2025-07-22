@@ -195,7 +195,7 @@ export class BoardArticleService {
 
 		const search: T = {
 			_id: _id,
-			BoardArticleStatus: BoardArticleStatus.ACTIVE,
+			articleStatus: BoardArticleStatus.ACTIVE,
 		};
 
 		const result = await this.boardArticleModel

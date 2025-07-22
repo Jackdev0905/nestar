@@ -26,13 +26,13 @@ export class FollowResolver {
 
     @UseGuards(AuthGuard)
 	@Mutation(() => Follower)
-	public async unSubscribe(
+	public async unsubscribe(
 		@Args('input') input: String,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Follower> {
-		console.log('Mutation: unSubscribe');
+		console.log('Mutation: unsubscribe');
 		const followingId = shapeIntoMongooseObjectId(input)
-		return await this.followService.unSubscribe(memberId, followingId);
+		return await this.followService.unsubscribe(memberId, followingId);
 	}
 
     @UseGuards(WithoutGuard)
