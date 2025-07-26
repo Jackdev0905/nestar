@@ -7,7 +7,7 @@ export enum Message{
     TOKEN_NOT_EXIST = "Bearer token is not provided",
     UPDATE_FAILED = "Update is failed",
     UPLOAD_FAILED = "Upload is failed",
-    BLOCKED_USER = "You have been blocked, please contact restaurant",
+    BLOCKED_USER = "You have been blocked, please contact us",
     NO_MEMBER_NICK = "No member with that member nick!",
     WRONG_PASSWORD = "Wrong passsword, please try again!",
     NOT_AUTHENTICATED = "You are not authenicated, please login first!",
